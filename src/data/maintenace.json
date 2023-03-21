@@ -1,0 +1,19 @@
+{
+    "info": [
+
+        {
+            "id": 0,
+            "bike_id": 0,
+            "part": "weels",
+            "description:": "change weels",
+            "date": "Gen 2022"
+        },
+        {
+            "id": 1,
+            "bike_id": 0,
+            "part": "brakes",
+            "description:": "change oil",
+            "date": "April 2022"
+        }
+    ]
+}

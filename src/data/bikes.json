@@ -1,0 +1,24 @@
+{
+    "bikes": [{
+            "id": 0,
+            "name": "Zamazenta",
+            "brand": "Megamo",
+            "model": "Crave AL 05",
+            "image": ""
+        },
+        {
+            "id": 1,
+            "name": "Sejmet",
+            "brand": "Megamo",
+            "model": "Crave AL 05",
+            "image": ""
+        },
+        {
+            "id": 2,
+            "name": "Superfly",
+            "brand": "Trek",
+            "model": "Superfly Al 6",
+            "image": ""
+        }
+    ]
+}
