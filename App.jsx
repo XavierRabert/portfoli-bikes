@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import BikeDetailScreen from './src/screens/BikeDetailScreen';
+import BikeDetailScreen from './src/screens/Bike/BikeDetailScreen';
 import BikesListScreen from './src/screens/BikesListScreen';
 
 export default function App() {
@@ -10,7 +10,7 @@ export default function App() {
   const Stack = createNativeStackNavigator()
 
   return (
-    <NavigationContainer>
+    <NavigationContainer styles={styles.container}>
       <Stack.Navigator screenOptions={screenOptions}>
         <Stack.Screen name='Bikes' component={BikesListScreen} options={{ title: 'Bikes', headerTitleAlign: 'center' }} />
         <Stack.Screen name='BikeDetail' component={BikeDetailScreen} options={({ route }) => ({ title: route.params.name })} />

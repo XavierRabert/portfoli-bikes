@@ -4,6 +4,7 @@
             "name": "Zamazenta",
             "brand": "Megamo",
             "model": "Crave AL 05",
+            "desc": "Elèctrica Xavier",
             "image": ""
         },
         {
@@ -11,6 +12,7 @@
             "name": "Sejmet",
             "brand": "Megamo",
             "model": "Crave AL 05",
+            "desc": "Elèctrica Laia",
             "image": ""
         },
         {
@@ -18,6 +20,7 @@
             "name": "Superfly",
             "brand": "Trek",
             "model": "Superfly Al 6",
+            "desc": "Rígida Xavier",
             "image": ""
         }
     ]
