@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 import { Pressable, StyleSheet, Text, View } from "react-native"
-import AddBike from "../components/bikes/List/AddBike"
-import BikesList from "../components/bikes/BikesList"
+import AddBike from "../../components/bikes/List/AddBike"
+import BikesList from "../../components/bikes/List/BikesList"
 
-import { database } from '../config/firebase'
+import { database } from '../../config/firebase'
 import { collection, query, onSnapshot, QuerySnapshot } from "firebase/firestore";
+import Button from "../../components/common/Button"
 
 const BikesListScreen = ({ navigation }) => {
 
@@ -39,11 +40,18 @@ const BikesListScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container} >
-            <Pressable onPress={setViewNewBike(!viewNewBike)}>
+
+            <Button
+                title={viewNewBike ? 'Cancel' : 'Add Bike'}
+                onPress={() => setViewNewBike(!viewNewBike)}
+                icon={viewNewBike ? 'close' : 'add'}
+                color='#f1f1f1'
+            />
+            {/* <Pressable onPress={() => setViewNewBike(!viewNewBike)}>
                 <View style={styles.button}>
-                    <Text>{viewNewBike ? 'Cancel' : 'Add Bike'}</Text>
+                    <Text style={styles.buttonText}>{viewNewBike ? 'Cancel' : 'Add Bike'}</Text>
                 </View>
-            </Pressable>
+            </Pressable> */}
 
             {viewNewBike ? <AddBike onSaveBike={setViewNewBike} /> : <BikesList bikes={bikes} navigation={navigation} />}
         </View>
@@ -58,9 +66,13 @@ const styles = StyleSheet.create({
     },
     button: {
         margin: 15,
-        backgroundColor: "#841584",
+        backgroundColor: "blue",
         padding: 10,
         alignItems: 'center'
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 15
     }
 })
 

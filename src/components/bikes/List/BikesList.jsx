@@ -22,9 +22,8 @@ const BikesList = ({ bikes, navigation }) => {
 const styles = StyleSheet.create({
     separator: {
         height: 5,
-        left: 16,
-        backgroundColor: 'red',
-        margin: 5
+        backgroundColor: '#ccc',
+        marginVertical: 15,
     },
     container: {
         flex: 1,

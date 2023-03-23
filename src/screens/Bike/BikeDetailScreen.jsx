@@ -1,6 +1,8 @@
 import { useRoute } from "@react-navigation/native";
 import { useState } from "react";
-import { Text } from "react-native"
+import { Text, View } from "react-native"
+import BikeDetail from "../../components/bikes/Detail/BikeDetail";
+import OptionsBike from "../../components/bikes/Detail/OptionsBike";
 
 const BikeDetailScreen = () => {
 
@@ -12,7 +14,14 @@ const BikeDetailScreen = () => {
 
 
     return (
-        <Text>{bike.name}</Text>
+        <View>
+            <View>
+                <OptionsBike />
+            </View>
+            <View>
+                <BikeDetail {...route.params} />
+            </View>
+        </View>
     )
 }
 

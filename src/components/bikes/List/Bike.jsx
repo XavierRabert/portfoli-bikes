@@ -4,7 +4,7 @@ const Bike = ({ name, desc, image, onPress }) => {
     return (
         <Pressable onPress={onPress} >
             <View style={styles.container_bike}>
-                <Image style={styles.image} source={{ uri: image }} />
+                <Image style={styles.image} source={image === '' ? { uri: 'https://via.placeholder.com/200' } : { uri: image }} />
                 {/* <View style={styles.container_text}> */}
                 <Text style={styles.name}>{name}</Text>
                 <Text style={styles.description}>{desc}</Text>

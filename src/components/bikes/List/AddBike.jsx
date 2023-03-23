@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Image } from "react-native"
 
 import { database } from '../../../config/firebase'
 import { collection, addDoc } from "firebase/firestore";
 
+import Button from "../../common/Button";
+import MyCamera from "../../common/MyCamera";
 
 const AddBike = ({ onSaveBike }) => {
 
@@ -11,6 +13,9 @@ const AddBike = ({ onSaveBike }) => {
     const [description, setDescription] = useState('')
     const [brand, setBrand] = useState('')
     const [model, setModel] = useState('')
+    const [image, setImage] = useState('')
+    const [showCamera, setShowCamera] = useState(false)
+
 
     const onSend = async () => {
         const newBike = {
@@ -19,77 +24,82 @@ const AddBike = ({ onSaveBike }) => {
             "brand": brand,
             "model": model,
             "desc": description,
-            "image": "",
+            "image": image,
             "createdAt": new Date()
         }
 
         await addDoc(collection(database, 'bikes'), newBike);
         onSaveBike(false)
     }
+
+    onTakePicture = (value) => {
+        setImage(value)
+    }
+
+
     return (
         <View style={styles.container}>
-            <View>
-                <Text>Bike Name</Text>
-            </View>
-            <View style={styles.contentInput} >
-                <TextInput
-                    placeholder="Bike Name"
-                    onChangeText={(value) => setName(value)}
-                    value={name}
-                />
-            </View>
+            {showCamera === true ?
+                <View style={styles.container}>
+                    <MyCamera
+                        onSave={() => setShowCamera(false)}
+                        onTakePicture={onTakePicture} />
+                </View>
+                :
+                <ScrollView style={styles.contentInput}>
 
-            <View>
-                <Text>Description</Text>
-            </View>
-            <View style={styles.contentInput} >
-                <TextInput
-                    placeholder="Description"
-                    onChangeText={(value) => setDescription(value)}
-                    value={description}
-                />
-            </View>
+                    <Text style={styles.lableText}>Bike Name</Text>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Bike Name"
+                        onChangeText={(value) => setName(value)}
+                        value={name}
+                    />
 
-            <View>
-                <Text>Brand</Text>
-            </View>
-            <View style={styles.contentInput} >
-                <TextInput
-                    placeholder="Brand"
-                    onChangeText={(value) => setBrand(value)}
-                    value={brand}
-                />
-            </View>
+                    <Text style={styles.lableText}>Description</Text>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Description"
+                        onChangeText={(value) => setDescription(value)}
+                        value={description}
+                    />
 
-            <View>
-                <Text>Model</Text>
-            </View>
-            <View style={styles.contentInput} >
-                <TextInput
-                    placeholder="Model"
-                    onChangeText={(value) => setModel(value)}
-                    value={model}
-                />
-            </View>
+                    <Text style={styles.lableText}>Brand</Text>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Brand"
+                        onChangeText={(value) => setBrand(value)}
+                        value={brand}
+                    />
 
-            <View>
-                <TouchableOpacity onPress={onSend} style={styles.btnContainer}>
-                    <Text style={styles.btnText}>Guardar</Text>
-                </TouchableOpacity>
-            </View>
+                    <Text style={styles.lableText}>Model</Text>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Model"
+                        onChangeText={(value) => setModel(value)}
+                        value={model}
+                    />
+
+                    <Image style={styles.image} source={image === '' ? { uri: 'https://via.placeholder.com/200' } : { uri: image }} />
+                    <Button title='Image' icon="photo-camera" color='#f1f1f1' onPress={() => setShowCamera(true)} />
+                    <Button title='Save' icon="check" color='#f1f1f1' onPress={onSend} />
 
 
-        </View>
+
+                </ScrollView>
+            }
+        </View >
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        _height: 200,
         flexDirection: 'column',
-        alignItems: 'center'
+        _justifyContent: 'center'
     },
-    contentInput: {
+    textInput: {
         backgroundColor: '#fff',
         margin: 10,
         width: '90%',
@@ -99,13 +109,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingLeft: 15
     },
-    btnContainer: {
-        backgroundColor: "blue",
-        padding: 15,
-        borderRadius: 10
+    lableText: {
+        color: '#000',
+        marginLeft: 10
     },
-    btnText: {
-        color: '#fff'
+    image: {
+        alignSelf: 'center',
+        height: 100,
+        width: 100,
+        borderRadius: 50
     }
 })
 

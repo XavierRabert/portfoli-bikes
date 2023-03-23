@@ -3,6 +3,7 @@ import 'dotenv/config'
 export default {
   "expo": {
     "name": "bike",
+    "plugins": ["expo-camera"],
     "slug": "bike",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -20,6 +21,7 @@ export default {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.anonymous.bike",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
