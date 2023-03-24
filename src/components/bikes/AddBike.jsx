@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, Image } from "react-native"
+import { useState } from "react";
+import { StyleSheet, Text, TextInput, View, ScrollView, Image } from "react-native"
 
-import { database } from '../../../config/firebase'
+import { app, database } from '../../config/firebase'
 import { collection, addDoc } from "firebase/firestore";
 
-import Button from "../../common/Button";
-import MyCamera from "../../common/MyCamera";
+import Button from "../common/Button";
+import MyCamera from "../common/MyCamera";
+import { getAuth } from "firebase/auth";
+
 
 const AddBike = ({ onSaveBike }) => {
 
@@ -16,10 +18,10 @@ const AddBike = ({ onSaveBike }) => {
     const [image, setImage] = useState('')
     const [showCamera, setShowCamera] = useState(false)
 
+    const user = getAuth(app)
 
     const onSend = async () => {
         const newBike = {
-            "id": 9, //Math.max(bikes.filter(x => x.id)) + 1,
             "name": name,
             "brand": brand,
             "model": model,
@@ -28,7 +30,7 @@ const AddBike = ({ onSaveBike }) => {
             "createdAt": new Date()
         }
 
-        await addDoc(collection(database, 'bikes'), newBike);
+        await addDoc(collection(database, `bikes-${user.currentUser.uid}`), newBike);
         onSaveBike(false)
     }
 
@@ -81,8 +83,8 @@ const AddBike = ({ onSaveBike }) => {
                     />
 
                     <Image style={styles.image} source={image === '' ? { uri: 'https://via.placeholder.com/200' } : { uri: image }} />
-                    <Button title='Image' icon="photo-camera" color='#f1f1f1' onPress={() => setShowCamera(true)} />
-                    <Button title='Save' icon="check" color='#f1f1f1' onPress={onSend} />
+                    <Button title='Image' icon="photo-camera" onPress={() => setShowCamera(true)} />
+                    <Button title='Save' icon="check" onPress={onSend} />
 
 
 

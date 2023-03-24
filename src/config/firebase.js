@@ -13,5 +13,5 @@ const firebaseConfig = {
     measurementId: Constants.manifest.extra.measurementId
 };
 
-initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig);
 export const database = getFirestore();

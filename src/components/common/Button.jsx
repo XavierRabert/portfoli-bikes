@@ -3,9 +3,12 @@ import React from 'react'
 import { MaterialIcons } from '@expo/vector-icons'
 
 const Button = ({ title, onPress, icon, color }) => {
+
+    const colorButton = color ? color : 'blue'
+
     return (
-        <TouchableOpacity onPress={onPress} style={styles.button}>
-            <MaterialIcons name={icon} size={28} color={color ? color : '#f1f1f1'} />
+        <TouchableOpacity onPress={onPress} style={[styles.button, { backgroundColor: colorButton }]} >
+            <MaterialIcons name={icon} size={28} color={'#f1f1f1'} />
             <Text style={styles.text}>{title}</Text>
         </TouchableOpacity>
     )
@@ -13,12 +16,13 @@ const Button = ({ title, onPress, icon, color }) => {
 
 const styles = StyleSheet.create({
     button: {
-        height: 60,
+        height: 50,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'blue',
-        padding: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
         borderRadius: 5,
         margin: 10
     },

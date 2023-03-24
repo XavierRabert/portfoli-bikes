@@ -29,7 +29,6 @@ const MyCamera = ({ onSave, onTakePicture }) => {
         if (cameraRef) {
             try {
                 const data = await cameraRef.current.takePictureAsync()
-                console.log('data.uri', data.uri)
                 setImage(data.uri)
             }
             catch (e) {
@@ -53,7 +52,6 @@ const MyCamera = ({ onSave, onTakePicture }) => {
         }
     }
 
-    console.log(image)
     if (hasCameraPermissions === false) {
         return <Text>No acces to camera</Text>
     }

@@ -1,21 +1,59 @@
-import { useEffect, useState } from "react"
-import { Pressable, StyleSheet, Text, View } from "react-native"
-import AddBike from "../../components/bikes/List/AddBike"
-import BikesList from "../../components/bikes/List/BikesList"
+import { useContext, useEffect, useState } from "react"
+import { FlatList, Pressable, StyleSheet, Text, View, Image } from "react-native"
+import AddBike from "../../components/bikes/AddBike"
+//import BikesList from "../../components/bikes/List/BikesList"
 
-import { database } from '../../config/firebase'
+import { app, database } from '../../config/firebase'
 import { collection, query, onSnapshot, QuerySnapshot } from "firebase/firestore";
 import Button from "../../components/common/Button"
+import { getAuth } from "firebase/auth"
+import BikeContext from "../../context/bikeContext";
+import { useNavigation } from "@react-navigation/native";
 
-const BikesListScreen = ({ navigation }) => {
+
+const BikesList = ({ bikes }) => {
+
+    const navigation = useNavigation()
+
+    const { setBikeCont } = useContext(BikeContext)
+    const separator = () => <View style={styles.separator} />
+
+    onSelectBike = (value) => {
+        setBikeCont(value)
+        navigation.navigate('BikeDetail', { ...value })
+    }
+
+    return (
+        <FlatList
+            data={bikes}
+            renderItem={({ item }) => (
+                <Pressable onPress={() => onSelectBike(item)} >
+                    <View style={styles.container_bike}>
+                        <Image style={styles.image} source={item.image === '' ? { uri: 'https://via.placeholder.com/200' } : { uri: item.image }} />
+                        <Text style={styles.name}>{item.name}</Text>
+                        <Text style={styles.description}>{item.desc}</Text>
+                    </View>
+                </Pressable>
+            )}
+            keyExtractor={(item) => item.id}
+            ItemSeparatorComponent={separator}
+        />
+    )
+}
+
+
+
+
+const BikesListScreen = () => {
 
     const [bikes, setBikes] = useState([])
     const [viewNewBike, setViewNewBike] = useState(false)
 
-
+    const user = getAuth(app)
 
     useEffect(() => {
-        const collectionRef = collection(database, 'bikes')
+        console.log(user.currentUser.uid)
+        const collectionRef = collection(database, `bikes-${user.currentUser.uid}`)
         const q = query(collectionRef)
         const unsuscribe = onSnapshot(q, querySnapshot => {
             setBikes(
@@ -33,31 +71,24 @@ const BikesListScreen = ({ navigation }) => {
     }, [])
 
 
-    if (bikes.length === 0) return (
-        <View >
-            <Text >Nothing to see here {bikes.length}</Text>
-        </View>)
 
     return (
         <View style={styles.container} >
-
             <Button
                 title={viewNewBike ? 'Cancel' : 'Add Bike'}
                 onPress={() => setViewNewBike(!viewNewBike)}
                 icon={viewNewBike ? 'close' : 'add'}
-                color='#f1f1f1'
             />
-            {/* <Pressable onPress={() => setViewNewBike(!viewNewBike)}>
-                <View style={styles.button}>
-                    <Text style={styles.buttonText}>{viewNewBike ? 'Cancel' : 'Add Bike'}</Text>
-                </View>
-            </Pressable> */}
 
-            {viewNewBike ? <AddBike onSaveBike={setViewNewBike} /> : <BikesList bikes={bikes} navigation={navigation} />}
+            {viewNewBike ? <AddBike onSaveBike={setViewNewBike} /> : <BikesList bikes={bikes} />}
         </View>
 
     )
 }
+
+
+const size = 80
+const padding = 16
 
 const styles = StyleSheet.create({
     container: {
@@ -73,7 +104,34 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontSize: 15
-    }
+    },
+    container_bike: {
+        flex: 1,
+        flexDirection: 'row',
+        height: size,
+        paddingLeft: padding,
+        alignItems: 'center',
+    },
+    container_text: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    image: {
+        height: size - padding,
+        width: size - padding,
+        borderRadius: (size - padding) / 2,
+        marginRight: padding,
+        backgroundColor: 'red'
+    },
+    name: {
+        fontSize: 18,
+        fontWeight: "bold",
+
+    },
+    description: {
+        fontSize: 12,
+        marginLeft: 5
+    },
 })
 
 export default BikesListScreen
