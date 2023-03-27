@@ -9,6 +9,7 @@ import Button from "../../components/common/Button"
 import { getAuth } from "firebase/auth"
 import BikeContext from "../../context/bikeContext";
 import { useNavigation } from "@react-navigation/native";
+import colors from "../../common/colors";
 
 
 const BikesList = ({ bikes }) => {
@@ -46,31 +47,8 @@ const BikesList = ({ bikes }) => {
 
 const BikesListScreen = () => {
 
-    const [bikes, setBikes] = useState([])
     const [viewNewBike, setViewNewBike] = useState(false)
-
-    const user = getAuth(app)
-
-    useEffect(() => {
-        console.log(user.currentUser.uid)
-        const collectionRef = collection(database, `bikes-${user.currentUser.uid}`)
-        const q = query(collectionRef)
-        const unsuscribe = onSnapshot(q, querySnapshot => {
-            setBikes(
-                querySnapshot.docs.map(bike => ({
-                    id: bike.id,
-                    name: bike.data().name,
-                    brand: bike.data().brand,
-                    mode: bike.data().model,
-                    desc: bike.data().desc,
-                    image: bike.data().image,
-                }))
-            )
-        })
-        return unsuscribe;
-    }, [])
-
-
+    const { allBikesCont } = useContext(BikeContext)
 
     return (
         <View style={styles.container} >
@@ -79,10 +57,8 @@ const BikesListScreen = () => {
                 onPress={() => setViewNewBike(!viewNewBike)}
                 icon={viewNewBike ? 'close' : 'add'}
             />
-
-            {viewNewBike ? <AddBike onSaveBike={setViewNewBike} /> : <BikesList bikes={bikes} />}
+            {viewNewBike ? <AddBike onSaveBike={setViewNewBike} /> : <BikesList bikes={allBikesCont} />}
         </View>
-
     )
 }
 
@@ -93,7 +69,7 @@ const padding = 16
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#999'
+        _backgroundColor: '#999'
     },
     button: {
         margin: 15,
@@ -111,6 +87,12 @@ const styles = StyleSheet.create({
         height: size,
         paddingLeft: padding,
         alignItems: 'center',
+        backgroundColor: colors.box,
+        borderColor: colors.border,
+        borderStyle: 'solid',
+        borderWidth: 2,
+        borderRadius: 5,
+        margin: 5
     },
     container_text: {
         flexDirection: 'row',
@@ -121,7 +103,7 @@ const styles = StyleSheet.create({
         width: size - padding,
         borderRadius: (size - padding) / 2,
         marginRight: padding,
-        backgroundColor: 'red'
+        _backgroundColor: 'red'
     },
     name: {
         fontSize: 18,

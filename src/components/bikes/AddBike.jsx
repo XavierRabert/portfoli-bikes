@@ -22,6 +22,7 @@ const AddBike = ({ onSaveBike }) => {
 
     const onSend = async () => {
         const newBike = {
+            "id": generateUniqueId(),
             "name": name,
             "brand": brand,
             "model": model,
@@ -38,6 +39,9 @@ const AddBike = ({ onSaveBike }) => {
         setImage(value)
     }
 
+    generateUniqueId = () => {
+        return Math.random().toString(30).substring(2);
+    }
 
     return (
         <View style={styles.container}>

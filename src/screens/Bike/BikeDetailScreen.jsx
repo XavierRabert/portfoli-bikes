@@ -5,6 +5,7 @@ import Button from "../../components/common/Button";
 import BikeContext from "../../context/bikeContext";
 
 const BikeDetail = ({ name, desc, brand, model, image, createdAt }) => {
+
     return (
         <View style={styles.containerDetails}>
             <Image style={styles.image} source={image === '' ? { uri: 'https://via.placeholder.com/200' } : { uri: image }} />
@@ -39,9 +40,8 @@ const OptionsBike = () => {
     )
 }
 
-const BikeDetailScreen = () => {
+const BikeDetailScreen = ({ route }) => {
 
-    const route = useRoute()
     return (
         <View style={styles.container}>
             <OptionsBike />
