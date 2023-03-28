@@ -3,7 +3,14 @@ import 'dotenv/config'
 export default {
   "expo": {
     "name": "bike",
-    "plugins": ["expo-camera"],
+    "plugins": [
+      "expo-camera",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]],
     "slug": "bike",
     "version": "1.0.0",
     "orientation": "portrait",

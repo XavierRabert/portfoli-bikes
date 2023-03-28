@@ -2,6 +2,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Alert, StyleSheet, Text, TextInput, View, TouchableOpacity, ImageBackground } from 'react-native';
 import BikeContext, { BikeProvider } from './src/context/bikeContext';
+import UserContext, { UserProvider } from './src/context/userContext';
 import BikeDetailScreen from './src/screens/Bike/BikeDetailScreen';
 import BikesListScreen from './src/screens/Bike/BikesListScreen';
 import { app, database } from "./src/config/firebase"
@@ -9,50 +10,15 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } f
 import Button from './src/components/common/Button';
 import { useContext, useEffect, useState } from 'react';
 import MaintenancesListScreen from './src/screens/Maintenance/MaintenancesListScreen';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { collection, onSnapshot, query } from 'firebase/firestore';
+import MenuOption from './src/components/common/MenuOption';
+import MenuUserOption from './src/components/common/MenuUserOption';
+import HomeScreen from './src/screens/HomeScreen';
+import UserScreen from './src/screens/UserScreen';
 
 
-
-function HomeScreen() {
-  const navigation = useNavigation()
-
-  const user = getAuth(app)
-  const { allBikesCont, setAllBikesCont } = useContext(BikeContext)
-
-  useEffect(() => {
-    const collectionRef = collection(database, `bikes-${user.currentUser.uid}`)
-    const q = query(collectionRef)
-    const unsuscribe = onSnapshot(q, querySnapshot => {
-      setAllBikesCont(
-        querySnapshot.docs.map(bike => ({
-          id: bike.id,
-          name: bike.data().name,
-          brand: bike.data().brand,
-          mode: bike.data().model,
-          desc: bike.data().desc,
-          image: bike.data().image,
-        }))
-      )
-    })
-    console.log(allBikesCont)
-    return unsuscribe;
-  }, [])
-
-
-  return (
-    <View style={styles.container}>
-
-      <TouchableOpacity onPress={() => navigation.navigate('Bikes')}>
-        <Text>Bikes List</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Parts')}>
-        <Text>Maintenances List</Text>
-      </TouchableOpacity>
-    </View>
-  )
-}
 
 function LoginScreen() {
   const [email, setEmail] = useState(null)
@@ -137,34 +103,50 @@ export default function App() {
   return (
     <SafeAreaView style={styles.containerAll}>
       <BikeProvider>
-        <NavigationContainer>
-          <Drawer.Navigator screenOptions={screenOptions}>
-            <Drawer.Screen name='Login' component={LoginScreen} options={{ headerShown: false, drawerItemStyle: { display: 'none' } }} />
-            <Drawer.Screen name='Logout' component={HandleLogOut} />
-            <Drawer.Screen name='Home' component={HomeScreen} options={{ title: 'Home', headerTitleAlign: 'center', headerBackVisible: false }} />
-            <Drawer.Screen name="Bikes" component={BikesListScreen} options={{ title: 'Bikes', headerTitleAlign: 'center' }} />
-            <Drawer.Screen name="BikeDetail" component={BikeDetailScreen}
-              options={({ route }) => ({
-                title: route.params
-                  ? route.params.name
-                  : "",
-                headerTitleAlign: 'center',
-                drawerItemStyle: { display: 'none' }
-              })} />
-            <Drawer.Screen name="Parts" component={MaintenancesListScreen} options={{ title: 'Parts', headerTitleAlign: 'center' }} />
-          </Drawer.Navigator>
-        </NavigationContainer>
+        <UserProvider>
+          <NavigationContainer>
+            <Drawer.Navigator screenOptions={screenOptions}
+              drawerContent={(props) => <MenuItems {...props} />}
+            >
+              <Drawer.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
+              <Drawer.Screen name='Logout' component={HandleLogOut} />
+              <Drawer.Screen name='Home' component={HomeScreen} options={{ title: 'Home', headerBackVisible: false }} />
+              <Drawer.Screen name='User' component={UserScreen} options={{ title: 'User' }} />
+              <Drawer.Screen name="Bikes" component={BikesListScreen} options={{ title: 'Bikes' }} />
+              <Drawer.Screen name="BikeDetail" component={BikeDetailScreen}
+                options={({ route }) => ({ title: route.params ? route.params.name : "" })} />
+              <Drawer.Screen name="Parts" component={MaintenancesListScreen} options={{ title: 'Parts' }} />
+            </Drawer.Navigator>
+          </NavigationContainer>
+        </UserProvider>
       </BikeProvider>
     </SafeAreaView>
 
   );
 }
 
+const MenuItems = ({ navigation }) => {
+
+  const user = getAuth()
+
+  return (
+    <DrawerContentScrollView style={styles.containerMenu}>
+
+      <MenuUserOption {...user.currentUser} onPress={() => navigation.navigate('User')} />
+
+      <MenuOption text="Bikes" onPress={() => navigation.navigate('Bikes')} />
+      <MenuOption text="Maintenance Parts" onPress={() => navigation.navigate('Parts')} />
+      <MenuOption text="Home" onPress={() => navigation.navigate('Home')} />
+
+    </DrawerContentScrollView>
+  )
+}
 
 const screenOptions = {
   headerStyle: {
     backgroundColor: '#DF2E38'
   },
+  headerTitleAlign: 'center',
   headerTintColor: '#fff',
   headerTitleStyle: {
     fontSize: 22,
@@ -173,6 +155,13 @@ const screenOptions = {
 }
 
 const styles = StyleSheet.create({
+  containerMenu: {
+    padding: 15,
+  },
+  textMenu: {
+    fontWeight: 'bold',
+    fontSize: 20
+  },
   containerAll: {
     flex: 1,
   },
@@ -189,44 +178,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center'
   },
-  // squareContainer: {
-  //   flex: 1,
-  //   height: '100%',
-  //   position: 'absolute',
-  //   _alignItems: 'center',
-  //   justifyContent: 'space-around'
-  // },
-  // square: {
-  //   height: 150,
-  //   width: 150,
-  //   borderRadius: 5,
-  //   backgroundColor: 'red',
-  //   transform: [{ rotate: '65deg' }],
-  //   margin: 25
-  // },
-  // circle: {
-  //   height: 150,
-  //   width: 150,
-  //   borderRadius: 75,
-  //   backgroundColor: 'blue',
-  //   margin: 25
-  // },
-  // triangle: {
-  //   width: 0,
-  //   height: 0,
-  //   backgroundColor: 'transparent',
-  //   borderStyle: 'solid',
-  //   borderTopWidth: 0,
-  //   borderRightWidth: 75,
-  //   borderBottomWidth: 150,
-  //   borderLeftWidth: 75,
-  //   borderTopColor: 'transparent',
-  //   borderRightColor: 'transparent',
-  //   borderBottomColor: 'yellow',
-  //   borderLeftColor: 'transparent',
-  //   transform: [{ rotate: '15deg' }],
-  //   margin: 25
-  // },
   loginScreen: {
     width: '90%',
     justifyContent: 'center',

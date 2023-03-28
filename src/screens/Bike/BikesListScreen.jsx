@@ -69,7 +69,6 @@ const padding = 16
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        _backgroundColor: '#999'
     },
     button: {
         margin: 15,
@@ -103,7 +102,6 @@ const styles = StyleSheet.create({
         width: size - padding,
         borderRadius: (size - padding) / 2,
         marginRight: padding,
-        _backgroundColor: 'red'
     },
     name: {
         fontSize: 18,

@@ -1,12 +1,15 @@
-import { collection, onSnapshot, query } from 'firebase/firestore'
+import { addDoc, collection, onSnapshot, query } from 'firebase/firestore'
 import { useContext, useEffect, useState } from 'react'
 import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity, TextInput } from 'react-native'
-import { FlatList } from 'react-native-gesture-handler'
-import { database } from '../../config/firebase'
+import { FlatList, ScrollView } from 'react-native-gesture-handler'
+import { app, database } from '../../config/firebase'
 import colors from '../../common/colors'
 import BikeContext from '../../context/bikeContext'
 import { Picker } from '@react-native-picker/picker'
 import Button from '../../components/common/Button'
+import { getAuth } from 'firebase/auth'
+
+
 
 const getFilePath = (file) => {
     const images = {
@@ -24,17 +27,38 @@ const getFilePath = (file) => {
 const AddMaintenancePart = ({ part, onFinish }) => {
 
     const { allBikesCont } = useContext(BikeContext)
-    const [selectedBike, setSelectedBike] = useState()
+    const [selectedBike, setSelectedBike] = useState('')
     const [description, setDescription] = useState('')
-    const [km, setkm] = useState(0)
-    console.log(part)
+    const [km, setkm] = useState('')
+
+    const user = getAuth(app)
+
+    generateUniqueId = () => {
+        return Math.random().toString(30).substring(2);
+    }
+
+    const onAddButton = async () => {
+        const newMant = {
+            "id": generateUniqueId(),
+            "bike_id": selectedBike,
+            "part_id": part.id,
+            "desc": description,
+            "km": km,
+            "createdAt": new Date()
+        }
+        console.log(newMant)
+
+        await addDoc(collection(database, `maintenance-${user.currentUser.uid}`), newMant);
+        onFinish(true)
+    }
+
 
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <View style={styles.btnContainer}>
                 <Button
                     title={'Save'}
-                    onPress={() => onFinish(true)}
+                    onPress={onAddButton}
                     icon={'check'}
                     color='green'
                 />
@@ -58,6 +82,7 @@ const AddMaintenancePart = ({ part, onFinish }) => {
                     style={styles.listPicker}
                     onValueChange={(itemValue) => setSelectedBike(itemValue)}
                 >
+                    <Picker.Item label="Select a Bike" value='' />
                     {allBikesCont.map((bike) => (
                         <Picker.Item key={bike.id} label={bike.name} value={bike.id} />
                     ))}
@@ -71,7 +96,7 @@ const AddMaintenancePart = ({ part, onFinish }) => {
                     placeholder='Km'
                     placeholderTextColor="grey"
                     value={km}
-                    onChangeText={(text) => setkm({ text })}
+                    onChangeText={(text) => setkm(text)}
                     keyboardType='numeric'
                 />
             </View>
@@ -85,12 +110,12 @@ const AddMaintenancePart = ({ part, onFinish }) => {
                         numberOfLines={5}
                         multiline={true}
                         value={description}
-                        onChangeText={(text) => setDescription({ text })}
+                        onChangeText={(text) => setDescription(text)}
                     />
                 </View>
 
             </View>
-        </View>
+        </ScrollView>
     )
 }
 
@@ -155,7 +180,7 @@ const SIZE = (width - (margin * column)) / column
 
 const styles = StyleSheet.create({
     container: {
-        _flex: 1,
+        flex: 1,
     },
     container_col: {
         flexDirection: 'column',
