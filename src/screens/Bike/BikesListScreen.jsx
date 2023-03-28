@@ -1,23 +1,16 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useLayoutEffect, useState } from "react"
 import { FlatList, Pressable, StyleSheet, Text, View, Image } from "react-native"
 import AddBike from "../../components/bikes/AddBike"
-//import BikesList from "../../components/bikes/List/BikesList"
-
-import { app, database } from '../../config/firebase'
-import { collection, query, onSnapshot, QuerySnapshot } from "firebase/firestore";
-import Button from "../../components/common/Button"
-import { getAuth } from "firebase/auth"
 import BikeContext from "../../context/bikeContext";
 import { useNavigation } from "@react-navigation/native";
 import colors from "../../common/colors";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { MaterialIcons } from '@expo/vector-icons'
 
 
 const BikesList = ({ bikes }) => {
-
     const navigation = useNavigation()
-
     const { setBikeCont } = useContext(BikeContext)
-    const separator = () => <View style={styles.separator} />
 
     onSelectBike = (value) => {
         setBikeCont(value)
@@ -37,7 +30,6 @@ const BikesList = ({ bikes }) => {
                 </Pressable>
             )}
             keyExtractor={(item) => item.id}
-            ItemSeparatorComponent={separator}
         />
     )
 }
@@ -46,18 +38,33 @@ const BikesList = ({ bikes }) => {
 
 
 const BikesListScreen = () => {
-
+    const navigation = useNavigation()
     const [viewNewBike, setViewNewBike] = useState(false)
     const { allBikesCont } = useContext(BikeContext)
 
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity onPress={() => setViewNewBike(!viewNewBike)}>
+                    <MaterialIcons name={viewNewBike ? 'close' : 'add'}
+                        size={28}
+                        color={'#f1f1f1'}
+                        marginRight={15}
+                    />
+                </TouchableOpacity>
+            )
+        })
+
+    }, [viewNewBike, navigation])
+
+
+
     return (
         <View style={styles.container} >
-            <Button
-                title={viewNewBike ? 'Cancel' : 'Add Bike'}
-                onPress={() => setViewNewBike(!viewNewBike)}
-                icon={viewNewBike ? 'close' : 'add'}
-            />
-            {viewNewBike ? <AddBike onSaveBike={setViewNewBike} /> : <BikesList bikes={allBikesCont} />}
+            {viewNewBike ?
+                <AddBike onSaveBike={setViewNewBike} /> :
+                <BikesList bikes={allBikesCont} />}
         </View>
     )
 }
@@ -69,16 +76,7 @@ const padding = 16
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    button: {
-        margin: 15,
-        backgroundColor: "blue",
-        padding: 10,
-        alignItems: 'center'
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 15
+        paddingTop: 15
     },
     container_bike: {
         flex: 1,
@@ -93,10 +91,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         margin: 5
     },
-    container_text: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
     image: {
         height: size - padding,
         width: size - padding,
@@ -106,7 +100,6 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 18,
         fontWeight: "bold",
-
     },
     description: {
         fontSize: 12,
@@ -115,3 +108,5 @@ const styles = StyleSheet.create({
 })
 
 export default BikesListScreen
+
+

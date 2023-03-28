@@ -46,7 +46,6 @@ const AddMaintenancePart = ({ part, onFinish }) => {
             "km": km,
             "createdAt": new Date()
         }
-        console.log(newMant)
 
         await addDoc(collection(database, `maintenance-${user.currentUser.uid}`), newMant);
         onFinish(true)

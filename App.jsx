@@ -1,22 +1,20 @@
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Alert, StyleSheet, Text, TextInput, View, TouchableOpacity, ImageBackground } from 'react-native';
-import BikeContext, { BikeProvider } from './src/context/bikeContext';
-import UserContext, { UserProvider } from './src/context/userContext';
+import { Alert, StyleSheet, Text, TextInput, View, ImageBackground } from 'react-native';
+import { BikeProvider } from './src/context/bikeContext';
 import BikeDetailScreen from './src/screens/Bike/BikeDetailScreen';
 import BikesListScreen from './src/screens/Bike/BikesListScreen';
-import { app, database } from "./src/config/firebase"
+import { app } from "./src/config/firebase"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
 import Button from './src/components/common/Button';
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 import MaintenancesListScreen from './src/screens/Maintenance/MaintenancesListScreen';
 import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { collection, onSnapshot, query } from 'firebase/firestore';
 import MenuOption from './src/components/common/MenuOption';
 import MenuUserOption from './src/components/common/MenuUserOption';
 import HomeScreen from './src/screens/HomeScreen';
 import UserScreen from './src/screens/UserScreen';
+import { MaterialIcons } from '@expo/vector-icons'
 
 
 
@@ -88,41 +86,47 @@ function LoginScreen() {
   )
 }
 
-function HandleLogOut() {
-  const navigation = useNavigation()
-  const auth = getAuth(app)
-  auth.signOut()
-    .then(() => console.log('User signed out!'));
-  navigation.navigate('Login')
-}
 
-const Stack = createNativeStackNavigator()
 const Drawer = createDrawerNavigator();
 export default function App() {
+
+
 
   return (
     <SafeAreaView style={styles.containerAll}>
       <BikeProvider>
-        <UserProvider>
-          <NavigationContainer>
-            <Drawer.Navigator screenOptions={screenOptions}
-              drawerContent={(props) => <MenuItems {...props} />}
-            >
-              <Drawer.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
-              <Drawer.Screen name='Logout' component={HandleLogOut} />
-              <Drawer.Screen name='Home' component={HomeScreen} options={{ title: 'Home', headerBackVisible: false }} />
-              <Drawer.Screen name='User' component={UserScreen} options={{ title: 'User' }} />
-              <Drawer.Screen name="Bikes" component={BikesListScreen} options={{ title: 'Bikes' }} />
-              <Drawer.Screen name="BikeDetail" component={BikeDetailScreen}
-                options={({ route }) => ({ title: route.params ? route.params.name : "" })} />
-              <Drawer.Screen name="Parts" component={MaintenancesListScreen} options={{ title: 'Parts' }} />
-            </Drawer.Navigator>
-          </NavigationContainer>
-        </UserProvider>
+        <NavigationContainer>
+          <Drawer.Navigator screenOptions={screenOptions}
+            drawerContent={(props) => <MenuItems {...props} />}
+          >
+            <Drawer.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
+            <Drawer.Screen name='Home' component={HomeScreen} options={{ title: 'Home' }} />
+            <Drawer.Screen name='User' component={UserScreen} options={{ title: 'User' }} />
+            <Drawer.Screen name="BikesList" component={BikesListScreen} options={{ title: 'Bikes' }} />
+            <Drawer.Screen name="BikeDetail" component={BikeDetailScreen}
+              options={({ route }) => ({ title: route.params ? route.params.name : "" })} />
+            <Drawer.Screen name="Parts" component={MaintenancesListScreen} options={{ title: 'Parts' }} />
+          </Drawer.Navigator>
+
+        </NavigationContainer>
+
       </BikeProvider>
     </SafeAreaView>
 
   );
+}
+
+const HeaderLeft = () => {
+
+  const openMenu = () => {
+    console.log('hola')
+  }
+
+  return (
+    <View style={styles.header}>
+      <MaterialIcons name='camera' onPress={openMenu} size={28} color={'#f1f1f1'} />
+    </View>
+  )
 }
 
 const MenuItems = ({ navigation }) => {
@@ -134,7 +138,7 @@ const MenuItems = ({ navigation }) => {
 
       <MenuUserOption {...user.currentUser} onPress={() => navigation.navigate('User')} />
 
-      <MenuOption text="Bikes" onPress={() => navigation.navigate('Bikes')} />
+      <MenuOption text="Bikes" onPress={() => navigation.navigate('BikesList')} />
       <MenuOption text="Maintenance Parts" onPress={() => navigation.navigate('Parts')} />
       <MenuOption text="Home" onPress={() => navigation.navigate('Home')} />
 

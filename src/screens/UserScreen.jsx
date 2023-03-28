@@ -1,12 +1,13 @@
-import { View, Text, Image, StyleSheet, Alert, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Alert, TextInput, TouchableOpacity } from 'react-native'
 import { getAuth, updateProfile, updatePassword } from 'firebase/auth'
-import * as ImagePicker from 'expo-image-picker';
 
 import { useEffect, useState } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import colors from '../common/colors';
 import { useNavigation } from '@react-navigation/native';
 import Button from '../components/common/Button';
+import MyImagePicker from '../components/common/MyImagePicker';
+import { MaterialIcons } from '@expo/vector-icons'
+import { app } from '../config/firebase';
 
 const UserScreen = () => {
 
@@ -15,16 +16,9 @@ const UserScreen = () => {
     const user = getAuth()
 
     const [image, setImage] = useState(user.currentUser ? user.currentUser.photoURL : null);
-    const [hasGalleryPermissions, setHasGalleryPermissions] = useState(null)
     const [userName, setUserName] = useState(user.currentUser ? user.currentUser.displayName : null)
     const [userEmail, setUserEmail] = useState(user.currentUser ? user.currentUser.email : null)
 
-    useEffect(() => {
-        (async () => {
-            const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync()
-            setHasGalleryPermissions(galleryStatus.status === 'granted')
-        })()
-    }, [image])
 
 
     useEffect(() => {
@@ -44,34 +38,37 @@ const UserScreen = () => {
         uploadImage()
     }, [image, userName])
 
-    const pickImage = async () => {
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity onPress={HandleLogOut}>
+                    <MaterialIcons name='logout'
+                        size={28}
+                        color={'#f1f1f1'}
+                        marginRight={15}
+                    />
+                </TouchableOpacity>
+            )
+        })
 
-        if (hasGalleryPermissions) {
-            let resultImage = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [4, 4],
-                quality: 1
-            })
+    }, [])
 
-            if (!resultImage.canceled) {
-                setImage(resultImage.assets[0].uri);
-            }
-        }
-        else {
-            Alert.alert('No Has Gallery Permissions')
-        }
+
+    function HandleLogOut() {
+        const auth = getAuth(app)
+        auth.signOut()
+            .then(() => console.log('User signed out!'));
+        navigation.navigate('Login')
     }
 
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={pickImage}>
-                <Image style={styles.image}
-                    source={image === '' || !image ?
-                        { uri: 'https://via.placeholder.com/200' } : { uri: image }}
-                />
-            </TouchableOpacity>
+
+            <MyImagePicker
+                image={image}
+                onSetImage={setImage} />
+
             <View>
                 <View style={styles.labelContainer}>
                     <Text style={styles.labelText}>User Name: </Text>
@@ -91,10 +88,10 @@ const UserScreen = () => {
                     />
                 </View>
             </View>
-            <Button
+            {/* <Button
                 title="LogOut"
                 onPress={() => navigation.navigate('Logout')}
-            />
+            /> */}
         </View>
     )
 }

@@ -41,7 +41,6 @@ const MyCamera = ({ onSave, onTakePicture }) => {
         if (image) {
             try {
                 await MediaLibrary.createAssetAsync(image)
-                console.log('Picture save!')
                 onTakePicture(image)
                 setImage(null)
                 onSave()

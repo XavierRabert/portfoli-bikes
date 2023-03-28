@@ -1,11 +1,10 @@
-import { View, Text, StyleSheet, Image } from 'react-native'
+import { Text, StyleSheet, Image } from 'react-native'
 import React from 'react'
 import colors from '../../common/colors'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
-const MenuUserOption = (props) => {
-    const { displayName, photoURL, onPress, email } = props
-    console.log('props: ', props)
+const MenuUserOption = ({ displayName, photoURL, onPress, email }) => {
+
     return (
         <TouchableOpacity onPress={onPress} style={styles.container}>
             <Image style={styles.image} source={photoURL === '' || !photoURL ? { uri: 'https://via.placeholder.com/200' } : { uri: photoURL }} />

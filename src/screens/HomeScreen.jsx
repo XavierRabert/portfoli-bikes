@@ -29,7 +29,6 @@ function HomeScreen() {
                 }))
             )
         })
-        console.log(allBikesCont)
         return unsuscribe;
     }, [])
 
@@ -39,7 +38,7 @@ function HomeScreen() {
     return (
         <View style={styles.container}>
 
-            <TouchableOpacity onPress={() => navigation.navigate('Bikes')}>
+            <TouchableOpacity onPress={() => navigation.navigate('BikesList')}>
                 <Text>Bikes List</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Parts')}>

@@ -1,10 +1,28 @@
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { useContext } from "react";
-import { StyleSheet, Text, View, Image } from "react-native"
+import { useNavigation } from "@react-navigation/native";
+import { useContext, useEffect } from "react";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native"
 import Button from "../../components/common/Button";
 import BikeContext from "../../context/bikeContext";
+import { MaterialIcons } from '@expo/vector-icons'
 
 const BikeDetail = ({ name, desc, brand, model, image, createdAt }) => {
+    const navigation = useNavigation()
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity onPress={() => navigation.navigate('BikesList')}>
+                    <MaterialIcons name='arrow-back'
+                        size={28}
+                        color={'#f1f1f1'}
+                        marginRight={15}
+                    />
+                </TouchableOpacity>
+            )
+        })
+
+    }, [])
+
 
     return (
         <View style={styles.containerDetails}>

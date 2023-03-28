@@ -7,6 +7,7 @@ import { collection, addDoc } from "firebase/firestore";
 import Button from "../common/Button";
 import MyCamera from "../common/MyCamera";
 import { getAuth } from "firebase/auth";
+import MyImagePicker from "../common/MyImagePicker";
 
 
 const AddBike = ({ onSaveBike }) => {
@@ -86,11 +87,13 @@ const AddBike = ({ onSaveBike }) => {
                         value={model}
                     />
 
-                    <Image style={styles.image} source={image === '' ? { uri: 'https://via.placeholder.com/200' } : { uri: image }} />
+                    <MyImagePicker
+                        image={image}
+                        onSetImage={setImage}
+                    />
+
                     <Button title='Image' icon="photo-camera" onPress={() => setShowCamera(true)} />
                     <Button title='Save' icon="check" onPress={onSend} />
-
-
 
                 </ScrollView>
             }
