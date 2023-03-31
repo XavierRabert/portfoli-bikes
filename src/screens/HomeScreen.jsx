@@ -11,8 +11,9 @@ import BikeContext from "../context/bikeContext"
 function HomeScreen() {
     const navigation = useNavigation()
 
+    const { setAllBikesCont } = useContext(BikeContext)
+
     const user = getAuth(app)
-    const { allBikesCont, setAllBikesCont } = useContext(BikeContext)
 
     useEffect(() => {
         const collectionRef = collection(database, `bikes-${user.currentUser.uid}`)
@@ -23,7 +24,7 @@ function HomeScreen() {
                     id: bike.id,
                     name: bike.data().name,
                     brand: bike.data().brand,
-                    mode: bike.data().model,
+                    model: bike.data().model,
                     desc: bike.data().desc,
                     image: bike.data().image,
                 }))
@@ -31,9 +32,6 @@ function HomeScreen() {
         })
         return unsuscribe;
     }, [])
-
-
-
 
     return (
         <View style={styles.container}>

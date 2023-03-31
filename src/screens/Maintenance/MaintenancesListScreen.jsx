@@ -1,76 +1,79 @@
 import { addDoc, collection, onSnapshot, query } from 'firebase/firestore'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useLayoutEffect, useState } from 'react'
 import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity, TextInput } from 'react-native'
 import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import { app, database } from '../../config/firebase'
 import colors from '../../common/colors'
 import BikeContext from '../../context/bikeContext'
 import { Picker } from '@react-native-picker/picker'
-import Button from '../../components/common/Button'
 import { getAuth } from 'firebase/auth'
+import { PARTS } from '../../data/maintenanceParts'
+import { useNavigation } from '@react-navigation/native'
+import { MaterialIcons } from '@expo/vector-icons'
 
-
-
-const getFilePath = (file) => {
-    const images = {
-        'Chain': require('../../images/logo/chain.png'),
-        'Fork': require('../../images/logo/fork.png'),
-        'Disk Brakes': require('../../images/logo/disc-brake.png'),
-    }
-
-    if (file === '') {
-        return { uri: 'https://via.placeholder.com/200' }
-    }
-    return images[file]
-}
 
 const AddMaintenancePart = ({ part, onFinish }) => {
 
-    const { allBikesCont } = useContext(BikeContext)
     const [selectedBike, setSelectedBike] = useState('')
     const [description, setDescription] = useState('')
     const [km, setkm] = useState('')
-
     const user = getAuth(app)
+    const navigation = useNavigation()
 
+
+    const { allBikesCont } = useContext(BikeContext)
+
+    // Carrega Opcions de menu
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <View style={{ flexDirection: 'row' }}>
+                    < TouchableOpacity onPress={onAddButton}  >
+                        <MaterialIcons name='check'
+                            size={28}
+                            color={'#f1f1f1'}
+                            marginRight={15}
+                        />
+                    </TouchableOpacity >
+                    < TouchableOpacity onPress={() => onFinish(true)}  >
+                        <MaterialIcons name='close'
+                            size={28}
+                            color={'#f1f1f1'}
+                            marginRight={15}
+                        />
+                    </TouchableOpacity >
+                </View>
+            )
+        })
+
+    }, [selectedBike, description, km, navigation])
+
+    // Genera codi unic
     generateUniqueId = () => {
         return Math.random().toString(30).substring(2);
     }
 
+    // Afegeix el register a la BBDD
     const onAddButton = async () => {
         const newMant = {
             "id": generateUniqueId(),
             "bike_id": selectedBike,
-            "part_id": part.id,
+            "part_id": part.slug,
             "desc": description,
             "km": km,
             "createdAt": new Date()
         }
 
-        await addDoc(collection(database, `maintenance-${user.currentUser.uid}`), newMant);
+        await addDoc(collection(database, `maintenance-${user.currentUser.uid}`), newMant)
         onFinish(true)
     }
 
 
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.btnContainer}>
-                <Button
-                    title={'Save'}
-                    onPress={onAddButton}
-                    icon={'check'}
-                    color='green'
-                />
-                <Button
-                    title={'Cancel'}
-                    onPress={() => onFinish(true)}
-                    icon={'close'}
-                    color='red'
-                />
-            </View>
-            {/* <View style={styles.container_col}> */}
+
             <View style={styles.container_part_add}>
-                <Image style={styles.image} source={getFilePath(part.name)} />
+                <Image style={styles.image} source={part.logo} />
                 <Text style={styles.name}>{part.name}</Text>
             </View>
             {/* </View> */}
@@ -124,23 +127,46 @@ const MaintenancesListScreen = () => {
     const [viewParts, setViewParts] = useState(true)
     const [selectedPart, setSelectedPart] = useState('')
 
+    const navigation = useNavigation()
+
+
+    // Llegeix el llistat de bicis
     useEffect(() => {
 
-        const collectionRef = collection(database, `maint_parts`)
-        const q = query(collectionRef)
-        const unsuscribe = onSnapshot(q, querySnapshot => {
-            setMaintParts(
-                querySnapshot.docs.map(maintPart => ({
-                    id: maintPart.id,
-                    name: maintPart.data().name,
-                    desc: maintPart.data().desc,
-                    logo: maintPart.data().logo,
-                }))
-            )
-        })
-        return unsuscribe;
+        // const collectionRef = collection(database, `maint_parts`)
+        // const q = query(collectionRef)
+        // const unsuscribe = onSnapshot(q, querySnapshot => {
+        //     setMaintParts(
+        //         querySnapshot.docs.map(maintPart => ({
+        //             id: maintPart.id,
+        //             name: maintPart.data().name,
+        //             desc: maintPart.data().desc,
+        //             logo: maintPart.data().logo,
+        //         }))
+        //     )
+        // })
+        // return unsuscribe;
+
+
+        setMaintParts(PARTS)
+        console.log(maintParts)
+
     }, [])
 
+    // Carrega Opcions de menu
+    useEffect(() => {
+        if (viewParts) {
+            navigation.setOptions({
+                headerRight: () => (
+                    <View style={{ flexDirection: 'row' }}>
+
+                    </View>
+                )
+            })
+        }
+    }, [viewParts])
+
+    // Canvia d epagina a Add
     const onSelectPart = (item) => {
         setSelectedPart(item)
         setViewParts(false)
@@ -154,15 +180,16 @@ const MaintenancesListScreen = () => {
                     renderItem={({ item }) => (
                         <TouchableOpacity onPress={() => onSelectPart(item)} >
                             <View style={styles.container_part}>
-                                <Image style={styles.image} source={getFilePath(item.name)} />
+                                {item.logo ?
+                                    <Image style={styles.image} source={item.logo} />
+                                    : <></>
+                                }
                                 <Text style={styles.name}>{item.name}</Text>
                             </View>
                         </TouchableOpacity >
                     )}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => item.name}
                     numColumns={2}
-                // columnWrapperStyle={styles.row}
-                //ItemSeparatorComponent={separator}
                 />
                 :
                 <AddMaintenancePart part={selectedPart} onFinish={setViewParts} />

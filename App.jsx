@@ -4,7 +4,9 @@ import { BikeProvider } from './src/context/bikeContext';
 import BikeDetailScreen from './src/screens/Bike/BikeDetailScreen';
 import BikesListScreen from './src/screens/Bike/BikesListScreen';
 import { app } from "./src/config/firebase"
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+} from "firebase/auth"
 import Button from './src/components/common/Button';
 import { useState } from 'react';
 import MaintenancesListScreen from './src/screens/Maintenance/MaintenancesListScreen';
@@ -14,13 +16,10 @@ import MenuOption from './src/components/common/MenuOption';
 import MenuUserOption from './src/components/common/MenuUserOption';
 import HomeScreen from './src/screens/HomeScreen';
 import UserScreen from './src/screens/UserScreen';
-import { MaterialIcons } from '@expo/vector-icons'
-
-
 
 function LoginScreen() {
-  const [email, setEmail] = useState(null)
-  const [password, setPassword] = useState(null)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const auth = getAuth(app)
   const navigation = useNavigation()
@@ -39,16 +38,19 @@ function LoginScreen() {
 
   const handelSignIn = () => {
     signInWithEmailAndPassword(auth, email.trim(), password.trim())
-      .then((userCredential) => {
-        console.log('Signed in!')
-        const user = userCredential.user
-        navigation.navigate('Home')
-      })
+      .then(
+        async (userCredential) => {
+          console.log('Signed in!')
+          const user = userCredential.user
+          navigation.navigate('Home')
+        })
       .catch(e => {
         console.log(e)
         Alert.alert(e.message)
       })
+
   }
+
 
   return (
     <View style={styles.container}>
@@ -61,12 +63,6 @@ function LoginScreen() {
           left: 0,
         }}>
 
-
-        {/* <View style={styles.squareContainer}>
-          <View style={styles.square} />
-          <View style={styles.circle} />
-          <View style={styles.triangle} />
-        </View> */}
         <View style={styles.loginScreen}>
 
           <Text style={styles.text}>E-mail</Text>
@@ -116,18 +112,6 @@ export default function App() {
   );
 }
 
-const HeaderLeft = () => {
-
-  const openMenu = () => {
-    console.log('hola')
-  }
-
-  return (
-    <View style={styles.header}>
-      <MaterialIcons name='camera' onPress={openMenu} size={28} color={'#f1f1f1'} />
-    </View>
-  )
-}
 
 const MenuItems = ({ navigation }) => {
 
@@ -153,7 +137,7 @@ const screenOptions = {
   headerTitleAlign: 'center',
   headerTintColor: '#fff',
   headerTitleStyle: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 'bold'
   },
 }

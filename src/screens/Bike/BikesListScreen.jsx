@@ -1,4 +1,4 @@
-import { useContext, useEffect, useLayoutEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { FlatList, Pressable, StyleSheet, Text, View, Image } from "react-native"
 import AddBike from "../../components/bikes/AddBike"
 import BikeContext from "../../context/bikeContext";
@@ -10,18 +10,18 @@ import { MaterialIcons } from '@expo/vector-icons'
 
 const BikesList = ({ bikes }) => {
     const navigation = useNavigation()
-    const { setBikeCont } = useContext(BikeContext)
+    // const { setBikeCont } = useContext(BikeContext)
 
-    onSelectBike = (value) => {
-        setBikeCont(value)
-        navigation.navigate('BikeDetail', { ...value })
-    }
+    // onSelectBike = (value) => {
+    //     setBikeCont(value)
+    //     navigation.navigate('BikeDetail', { ...value })
+    // }
 
     return (
         <FlatList
             data={bikes}
             renderItem={({ item }) => (
-                <Pressable onPress={() => onSelectBike(item)} >
+                <Pressable onPress={() => navigation.navigate('BikeDetail', { ...item })} >
                     <View style={styles.container_bike}>
                         <Image style={styles.image} source={item.image === '' ? { uri: 'https://via.placeholder.com/200' } : { uri: item.image }} />
                         <Text style={styles.name}>{item.name}</Text>
@@ -40,23 +40,30 @@ const BikesList = ({ bikes }) => {
 const BikesListScreen = () => {
     const navigation = useNavigation()
     const [viewNewBike, setViewNewBike] = useState(false)
+
     const { allBikesCont } = useContext(BikeContext)
 
 
+    // Opcions de menu
     useEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <TouchableOpacity onPress={() => setViewNewBike(!viewNewBike)}>
-                    <MaterialIcons name={viewNewBike ? 'close' : 'add'}
-                        size={28}
-                        color={'#f1f1f1'}
-                        marginRight={15}
-                    />
-                </TouchableOpacity>
-            )
-        })
+        if (!viewNewBike) {
+            navigation.setOptions({
+                headerRight: () => (
+                    <View style={{ flexDirection: 'row' }}>
 
-    }, [viewNewBike, navigation])
+                        <TouchableOpacity onPress={() => setViewNewBike(true)}>
+                            <MaterialIcons name='add'
+                                size={28}
+                                color={'#f1f1f1'}
+                                marginRight={15}
+                            />
+                        </TouchableOpacity>
+                    </View>
+
+                )
+            })
+        }
+    }, [viewNewBike])
 
 
 

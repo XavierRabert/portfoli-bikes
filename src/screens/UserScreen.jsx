@@ -1,13 +1,13 @@
 import { View, Text, StyleSheet, Alert, TextInput, TouchableOpacity } from 'react-native'
-import { getAuth, updateProfile, updatePassword } from 'firebase/auth'
+import { getAuth, updateProfile } from 'firebase/auth'
 
 import { useEffect, useState } from 'react'
 import colors from '../common/colors';
 import { useNavigation } from '@react-navigation/native';
-import Button from '../components/common/Button';
 import MyImagePicker from '../components/common/MyImagePicker';
 import { MaterialIcons } from '@expo/vector-icons'
 import { app } from '../config/firebase';
+
 
 const UserScreen = () => {
 
@@ -88,10 +88,7 @@ const UserScreen = () => {
                     />
                 </View>
             </View>
-            {/* <Button
-                title="LogOut"
-                onPress={() => navigation.navigate('Logout')}
-            /> */}
+
         </View>
     )
 }

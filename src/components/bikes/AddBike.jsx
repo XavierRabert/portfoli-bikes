@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { StyleSheet, Text, TextInput, View, ScrollView, Image } from "react-native"
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, TextInput, View, ScrollView, Image, TouchableOpacity } from "react-native"
 
 import { app, database } from '../../config/firebase'
 import { collection, addDoc } from "firebase/firestore";
@@ -8,9 +8,13 @@ import Button from "../common/Button";
 import MyCamera from "../common/MyCamera";
 import { getAuth } from "firebase/auth";
 import MyImagePicker from "../common/MyImagePicker";
+import { useNavigation } from "@react-navigation/native";
+import { MaterialIcons } from '@expo/vector-icons'
 
 
 const AddBike = ({ onSaveBike }) => {
+
+    const navigation = useNavigation()
 
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
@@ -21,6 +25,32 @@ const AddBike = ({ onSaveBike }) => {
 
     const user = getAuth(app)
 
+    // Afegeix Opcions de menu
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <View style={{ flexDirection: 'row' }}>
+                    < TouchableOpacity onPress={() => onSend()}  >
+                        <MaterialIcons name='check'
+                            size={28}
+                            color={'#f1f1f1'}
+                            marginRight={15}
+                        />
+                    </TouchableOpacity >
+                    < TouchableOpacity onPress={() => onSaveBike(false)}  >
+                        <MaterialIcons name='close'
+                            size={28}
+                            color={'#f1f1f1'}
+                            marginRight={15}
+                        />
+                    </TouchableOpacity >
+                </View>
+            )
+        })
+
+    }, [navigation, name, description, brand, model, image])
+
+    // Guarda la nova bici
     const onSend = async () => {
         const newBike = {
             "id": generateUniqueId(),
@@ -36,10 +66,12 @@ const AddBike = ({ onSaveBike }) => {
         onSaveBike(false)
     }
 
+    // Recull la imatge
     onTakePicture = (value) => {
         setImage(value)
     }
 
+    // Genera un id unic
     generateUniqueId = () => {
         return Math.random().toString(30).substring(2);
     }
@@ -93,7 +125,6 @@ const AddBike = ({ onSaveBike }) => {
                     />
 
                     <Button title='Image' icon="photo-camera" onPress={() => setShowCamera(true)} />
-                    <Button title='Save' icon="check" onPress={onSend} />
 
                 </ScrollView>
             }
