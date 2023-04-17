@@ -16,10 +16,11 @@ import MenuOption from './src/components/common/MenuOption';
 import MenuUserOption from './src/components/common/MenuUserOption';
 import HomeScreen from './src/screens/HomeScreen';
 import UserScreen from './src/screens/UserScreen';
+import { MaintProvider } from './src/context/maintContext';
 
 function LoginScreen() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('xrabert@gmail.com')
+  const [password, setPassword] = useState('111111')
 
   const auth = getAuth(app)
   const navigation = useNavigation()
@@ -66,10 +67,12 @@ function LoginScreen() {
         <View style={styles.loginScreen}>
 
           <Text style={styles.text}>E-mail</Text>
-          <TextInput onChangeText={(text) => setEmail(text)} style={styles.textInput} />
+          <TextInput onChangeText={(text) => setEmail(text)} style={styles.textInput}
+            value='xrabert@gmail.com' />
 
           <Text style={styles.text}>Password</Text>
-          <TextInput secureTextEntry={true} onChangeText={(text) => setPassword(text)} style={styles.textInput} />
+          <TextInput secureTextEntry={true} onChangeText={(text) => setPassword(text)} style={styles.textInput}
+            value='111111' />
 
           <View>
             <Button onPress={handleCreateAccount} title="Create Account" icon='person' />
@@ -91,21 +94,22 @@ export default function App() {
   return (
     <SafeAreaView style={styles.containerAll}>
       <BikeProvider>
-        <NavigationContainer>
-          <Drawer.Navigator screenOptions={screenOptions}
-            drawerContent={(props) => <MenuItems {...props} />}
-          >
-            <Drawer.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
-            <Drawer.Screen name='Home' component={HomeScreen} options={{ title: 'Home' }} />
-            <Drawer.Screen name='User' component={UserScreen} options={{ title: 'User' }} />
-            <Drawer.Screen name="BikesList" component={BikesListScreen} options={{ title: 'Bikes' }} />
-            <Drawer.Screen name="BikeDetail" component={BikeDetailScreen}
-              options={({ route }) => ({ title: route.params ? route.params.name : "" })} />
-            <Drawer.Screen name="Parts" component={MaintenancesListScreen} options={{ title: 'Parts' }} />
-          </Drawer.Navigator>
+        <MaintProvider>
+          <NavigationContainer>
+            <Drawer.Navigator screenOptions={screenOptions}
+              drawerContent={(props) => <MenuItems {...props} />}
+            >
+              <Drawer.Screen name='Login' component={LoginScreen} options={{ headerShown: false }} />
+              <Drawer.Screen name='Home' component={HomeScreen} options={{ title: 'Home' }} />
+              <Drawer.Screen name='User' component={UserScreen} options={{ title: 'User' }} />
+              <Drawer.Screen name="BikesList" component={BikesListScreen} options={{ title: 'Bikes' }} />
+              <Drawer.Screen name="BikeDetail" component={BikeDetailScreen}
+                options={({ route }) => ({ title: route.params ? route.params.name : "" })} />
+              <Drawer.Screen name="Parts" component={MaintenancesListScreen} options={{ title: 'Parts' }} />
+            </Drawer.Navigator>
 
-        </NavigationContainer>
-
+          </NavigationContainer>
+        </MaintProvider>
       </BikeProvider>
     </SafeAreaView>
 

@@ -273,11 +273,9 @@ const styles = StyleSheet.create({
         margin: 10,
     },
     textArea: {
-        margin: 10,
-        width: width - 20,
+        margin: 5,
         height: 120,
-        fontSize: 15,
-        justifyContent: 'flex-start',
+        fontSize: 15
     },
     labelItem: {
         margin: 10,

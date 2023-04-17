@@ -4,17 +4,20 @@ import { collection, onSnapshot, query } from "firebase/firestore"
 import { useContext, useEffect } from "react"
 import { StyleSheet, View, Text } from "react-native"
 import { TouchableOpacity } from "react-native-gesture-handler"
+import MaintenancesList from "../components/maintenances/MaintenancesList"
 import { app, database } from "../config/firebase"
 import BikeContext from "../context/bikeContext"
-
+import MaintContext from "../context/maintContext"
 
 function HomeScreen() {
     const navigation = useNavigation()
 
     const { setAllBikesCont } = useContext(BikeContext)
+    const { allMaintCont, setAllMaintCont } = useContext(MaintContext)
 
     const user = getAuth(app)
 
+    // Llegeix bicis
     useEffect(() => {
         const collectionRef = collection(database, `bikes-${user.currentUser.uid}`)
         const q = query(collectionRef)
@@ -27,6 +30,26 @@ function HomeScreen() {
                     model: bike.data().model,
                     desc: bike.data().desc,
                     image: bike.data().image,
+                    createdAt: bike.data().createdAt,
+                }))
+            )
+        })
+        return unsuscribe;
+    }, [])
+
+    // Llegeix els manteniment
+    useEffect(() => {
+        const collectionRef = collection(database, `maintenance-${user.currentUser.uid}`)
+        const q = query(collectionRef)
+        const unsuscribe = onSnapshot(q, querySnapshot => {
+            setAllMaintCont(
+                querySnapshot.docs.map(maint => ({
+                    id: maint.id,
+                    bike_id: maint.data().bike_id,
+                    desc: maint.data().desc,
+                    km: maint.data().km,
+                    part_id: maint.data().part_id,
+                    createdAt: maint.data().createdAt,
                 }))
             )
         })
@@ -35,13 +58,7 @@ function HomeScreen() {
 
     return (
         <View style={styles.container}>
-
-            <TouchableOpacity onPress={() => navigation.navigate('BikesList')}>
-                <Text>Bikes List</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Parts')}>
-                <Text>Maintenances List</Text>
-            </TouchableOpacity>
+            <MaintenancesList maintenances={allMaintCont} />
         </View>
     )
 }
@@ -51,7 +68,7 @@ const styles = StyleSheet.create({
         flex: 1,
         _backgroundColor: 'rgb(107,142,35)',
         justifyContent: 'center',
-        alignItems: 'center',
+        _alignItems: 'center',
         _position: 'relative'
     }
 })
